@@ -78,22 +78,23 @@
             e.preventDefault();
             const email = document.getElementById('email');
             const password = document.getElementById('password');
+            let response;
             try {
                 const loginDetails = {
                     email: email.value,
                     password: password.value
                 }
-                const response = await axios.post('http://localhost:3000/user/login', loginDetails);
+                response = await axios.post('http://localhost:3000/user/login', loginDetails);
+                window.alert(response.data.message);
             } catch (err) {
-                if (response.status === 500 || response.status === 404) {
-                    const form = document.getElementById('form');
-                    form.innerHTML += `<div style="color:red">${response.data.message}</div>`
-                }
+                const form = document.getElementById('form');
+                    form.innerHTML += `<div style="color:red">${err.response.data.message}</div>`
                 console.log(err);
             }
             email.value = '';
             password.value = '';
         }
+
     </script>
 
 </body>
