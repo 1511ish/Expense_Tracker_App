@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -69,15 +69,15 @@
         }
 
 
-        window.addEventListener("DOMContentLoaded", () => {
-            axios.get('http://localhost:3000/expense/get-expenses')
-                .then(response => {
-                    for (var i = 0; i < response.data.allExpense.length; i++) {
-                        showDataOnScreen(response.data.allExpense[i])
-                    }
-                })
-                .catch(err => console.error(err));
-        })
+        // window.addEventListener("DOMContentLoaded", () => {
+        //     axios.get('http://localhost:3000/expense/get-expenses')
+        //         .then(response => {
+        //             for (var i = 0; i < response.data.allExpense.length; i++) {
+        //                 showDataOnScreen(response.data.allExpense[i])
+        //             }
+        //         })
+        //         .catch(err => console.error(err));
+        // })
 
 
         function showDataOnScreen(expense) {
@@ -112,6 +112,7 @@
         }
 
     </script>
+
 </body>
 
-</html>
+</html>   
