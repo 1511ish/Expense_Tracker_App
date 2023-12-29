@@ -17,10 +17,14 @@ exports.signUp = async (req, res) => {
         }
 
         bcrypt.hash(password, 10, async (err, hash) => {
-            await User.create({ name: name, email_Id: email, password: password });
+            await User.create({ name: name, email_Id: email, password: hash });
             res.status(201).json({ message: 'Successfully create new user' });
             console.log('SUCCESSFULLY ADDED');
         })
+
+        // await User.create({ name: name, email_Id: email, password: password });
+        // res.status(201).json({ message: 'Successfully create new user' });
+        // console.log('SUCCESSFULLY ADDED');
 
     }
     catch (err) {
@@ -83,14 +87,14 @@ exports.login = async (req, res) => {
     try {
         const user = await User.findAll({ where: { email_Id: email } })
         if (user.length > 0) {
-            bcrypt.compare(password, user[0].password, (err, result) => {
-                if (err) {
+            console.log(user[0].dataValues.password);
+            bcrypt.compare(password, user[0].dataValues.password, (err, result) => {
+                if (err){
                     throw new Error('Something went wrong');
                 }
                 if (result === true) {
                     res.status(200).json({ success: true, message: "User logged in successfully" });
-                }
-                else {
+                } else {
                     return res.status(400).json({ success: false, message: 'Password is incorrect' });
                 }
             })

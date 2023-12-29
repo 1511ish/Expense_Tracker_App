@@ -1,4 +1,4 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,15 +9,47 @@
         h4{
             color: red;
         }
+        #container{
+            display: flex;
+            /* flex-direction: column; */
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f3f3;
+        }
+        form{
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        input{
+            padding: 5px;
+        }
+        #options{
+            padding: 5px;
+        }
+        option{
+            padding: 5px;
+        }
+        label{
+            padding-top: 10px;
+        }
+        #add{
+            background-color: #45a049;
+            border: none;
+            font-size: large;
+            margin-top: 10px;
+            color: #ffff;
+            cursor: pointer;
+        }
     </style>
 </head>
 
 <body>
-    <div>
+    <div id="container">
         <form>
-            <label for="amount">Choose Expenseamount:</label>
+            <label for="amount">Expenseamount:</label>
             <input type="number" id="amount" name="amount">
-            <label for="description">Choose Description:</label>
+            <label for="description">Description:</label>
             <input type="text" id="description" name="description">
             <label for="options">Choose Category:</label>
             <select id="options" name="category">
@@ -32,6 +64,7 @@
             <!-- <button type="submit">Add Expense</button> -->
         </form>
     </div>
+    <div id="err_div"></div>
     <ul id="lists">
     </ul>
 
@@ -40,6 +73,7 @@
 
         var ul = document.getElementById('lists');
         var add = document.getElementById('add');
+        let errDiv = document.getElementById('err_div');
         let expence_amount = document.getElementById('amount');
         let description = document.getElementById('description');
 
@@ -59,25 +93,26 @@
             axios.post('http://localhost:3000/expense/add-expense', newExpense)
                 .then(response => {
                     showDataOnScreen(response.data.newExpenseDetail)
-                    console.log();
+                    expence_amount.value = '';
+                    description.value = '';
                 })
                 .catch(err => {
-                    ul.innerHTML = ul.innerHTML+`<h4 color:'red'>PLEASE FILL ALL FEILDS</h4>`
+                    errDiv.innerHTML = errDiv.innerHTML+`<h4 color:'red'>PLEASE FILL ALL FEILDS</h4>`
                     console.log(err)
                 });
 
         }
 
 
-        // window.addEventListener("DOMContentLoaded", () => {
-        //     axios.get('http://localhost:3000/expense/get-expenses')
-        //         .then(response => {
-        //             for (var i = 0; i < response.data.allExpense.length; i++) {
-        //                 showDataOnScreen(response.data.allExpense[i])
-        //             }
-        //         })
-        //         .catch(err => console.error(err));
-        // })
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get('http://localhost:3000/expense/get-expenses')
+                .then(response => {
+                    for (var i = 0; i < response.data.allExpense.length; i++) {
+                        showDataOnScreen(response.data.allExpense[i])
+                    }
+                })
+                .catch(err => console.error(err));
+        })
 
 
         function showDataOnScreen(expense) {

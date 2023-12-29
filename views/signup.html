@@ -88,8 +88,8 @@
                 }
                 const response = await axios.post('http://localhost:3000/user/signup', user);
                 if (response.status === 201) {
-                    console.log("user created SUCCESSFULLY");
-                    // window.location.href =  "../login/login.html";
+                    alert("user signup successfully.");
+                    window.location.href =  "./login.html";
                 } else {
                     throw new Error("failed to login");
                 }
