@@ -4,6 +4,9 @@ const bodyParser = require('body-parser');
 const path = require('path');
 var cors = require('cors');
 
+const User = require('./models/User');
+const Expense = require('./models/Expense');
+
 const app = express();
 
 const expenseRoutes = require('./routes/expense');
@@ -18,6 +21,8 @@ app.use('/expense',expenseRoutes);
 // app.use('/', (req, res) => {
 //     res.sendFile(path.join(__dirname, '/views/signup.html'));
 // });
+User.hasMany(Expense);
+Expense.belongsTo(User);
 
 sequelize.sync()
     .then(result => {

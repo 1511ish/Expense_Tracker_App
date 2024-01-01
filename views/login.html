@@ -87,7 +87,8 @@
                 }
                 response = await axios.post('http://localhost:3000/user/login', loginDetails);
                 window.alert(response.data.message);
-                window.location.href =  "./index.html";
+                localStorage.setItem('token', response.data.token);
+                window.location.href =  "./addExpense.html";
             } catch (err) {
                 const form = document.getElementById('form');
                     form.innerHTML += `<div style="color:red">${err.response.data.message}</div>`

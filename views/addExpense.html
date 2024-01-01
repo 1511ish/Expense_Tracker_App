@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        h4{
+            color: red;
+        }
+        #container{
+            display: flex;
+            /* flex-direction: column; */
+            align-items: center;
+            justify-content: center;
+            background-color: #f3f3f3;
+        }
+        form{
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+        input{
+            padding: 5px;
+        }
+        #options{
+            padding: 5px;
+        }
+        option{
+            padding: 5px;
+        }
+        label{
+            padding-top: 10px;
+        }
+        #add{
+            background-color: #45a049;
+            border: none;
+            font-size: large;
+            margin-top: 10px;
+            color: #ffff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <form>
+            <label for="amount">Expenseamount:</label>
+            <input type="number" id="amount" name="amount">
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description">
+            <label for="options">Choose Category:</label>
+            <select id="options" name="category">
+                <option value="vacation">Vacation</option>
+                <option value="movie">Movie</option>
+                <option value="food">Food</option>
+                <option value="shoping">Shoping</option>
+                <option value="phone">Phone</option>
+                <option value="electricity_bill">Electricity Bill</option>
+                <option value="others">Others</option>
+            </select>
+            <input type="button" value="Add Expense" id="add">
+            <!-- <button type="submit">Add Expense</button> -->
+        </form>
+    </div>
+    <div id="err_div"></div>
+    <ul id="lists">
+    </ul>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script>
+
+        var ul = document.getElementById('lists');
+        var add = document.getElementById('add');
+        let errDiv = document.getElementById('err_div');
+        let expence_amount = document.getElementById('amount');
+        let description = document.getElementById('description');
+
+        add.addEventListener('click', addExpense);
+
+
+        function addExpense() {
+            let ind = document.getElementById("options").selectedIndex;
+            let category = document.getElementsByTagName("option")[ind];
+
+            const newExpense = {
+                amount: expence_amount.value,
+                description: description.value,
+                category: category.value,
+            }
+
+            axios.post('http://localhost:3000/expense/add-expense', newExpense)
+                .then(response => {
+                    showDataOnScreen(response.data.newExpenseDetail)
+                    expence_amount.value = '';
+                    description.value = '';
+                })
+                .catch(err => {
+                    errDiv.innerHTML = errDiv.innerHTML+`<h4 color:'red'>PLEASE FILL ALL FEILDS</h4>`
+                    console.log(err)
+                });
+
+        }
+
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem('token')
+            axios.get('http://localhost:3000/expense/get-expenses',{headers: {'Authorization': token}})
+                .then(response => {
+                    for (var i = 0; i < response.data.allExpense.length; i++) {
+                        showDataOnScreen(response.data.allExpense[i])
+                    }
+                })
+                .catch(err => console.error(err));
+        })
+
+
+        function showDataOnScreen(expense) {
+            ul.innerHTML = ul.innerHTML + `<li id="${expense.id}"> ${expense.expense_amount} - ${expense.description} - ${expense.category} - <button onclick="editExpense('${expense.id}','${expense.expense_amount}','${expense.description}','${expense.category}')">Edit</button> <button onclick="deleteExpense(${expense.id})">Delete</button></li>`;
+        }
+
+
+        function deleteExpense(expenseId) {
+            axios.delete(`http://localhost:3000/expense/delete-expense/${expenseId}`)
+                .then((response) => {
+                    removeExpensefromScreen(expenseId);
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+
+            event.preventDefault();
+        }
+
+
+        function editExpense(expenseId, amount, desc, cate) {
+            expence_amount.value = amount;
+            description.value = desc;
+            deleteExpense(expenseId);
+        }
+
+
+        function removeExpensefromScreen(expenseId) {
+            const childNodeToBeDeleted = document.getElementById(expenseId);
+            if (childNodeToBeDeleted)
+                ul.removeChild(childNodeToBeDeleted);
+        }
+
+    </script>
+
+</body>
+
+</html>   
