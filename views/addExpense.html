@@ -6,34 +6,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        h4{
+        h4 {
             color: red;
         }
-        #container{
+
+        #container {
             display: flex;
             /* flex-direction: column; */
             align-items: center;
             justify-content: center;
             background-color: #f3f3f3;
         }
-        form{
+
+        form {
             width: 400px;
             display: flex;
             flex-direction: column;
         }
-        input{
+
+        input {
             padding: 5px;
         }
-        #options{
+
+        #options {
             padding: 5px;
         }
-        option{
+
+        option {
             padding: 5px;
         }
-        label{
+
+        label {
             padding-top: 10px;
         }
-        #add{
+
+        #add {
             background-color: #45a049;
             border: none;
             font-size: large;
@@ -62,17 +69,19 @@
                 <option value="others">Others</option>
             </select>
             <input type="button" value="Add Expense" id="add">
-            <!-- <button type="submit">Add Expense</button> -->
+            <input type="button" value="Buy Premium" id="rzp-button1">
+            <!-- <button id="rzp-button1">Buy Premium</button> -->
         </form>
     </div>
     <div id="err_div"></div>
-    <ul id="lists">
+    <ul id="expense_list">
     </ul>
 
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script>
 
-        var ul = document.getElementById('lists');
+        var ul = document.getElementById('expense_list');
         var add = document.getElementById('add');
         let errDiv = document.getElementById('err_div');
         let expence_amount = document.getElementById('amount');
@@ -98,7 +107,7 @@
                     description.value = '';
                 })
                 .catch(err => {
-                    errDiv.innerHTML = errDiv.innerHTML+`<h4 color:'red'>PLEASE FILL ALL FEILDS</h4>`
+                    errDiv.innerHTML = errDiv.innerHTML + `<h4 color:'red'>PLEASE FILL ALL FEILDS</h4>`
                     console.log(err)
                 });
 
@@ -107,7 +116,7 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             const token = localStorage.getItem('token')
-            axios.get('http://localhost:3000/expense/get-expenses',{headers: {'Authorization': token}})
+            axios.get('http://localhost:3000/expense/get-expenses', { headers: { 'Authorization': token } })
                 .then(response => {
                     for (var i = 0; i < response.data.allExpense.length; i++) {
                         showDataOnScreen(response.data.allExpense[i])
@@ -148,8 +157,38 @@
                 ul.removeChild(childNodeToBeDeleted);
         }
 
+
+        document.getElementById('rzp-button1').onclick = async function (e) {
+            e.preventDefault();
+            const token = localStorage.getItem('token');
+            const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } })
+            console.log(response);
+            var options = {
+                "key": response.data.key_id,
+                "order_id": response.data.order.id,
+                "handler": async function (response) {
+                    await axios.post('http://localhost:3000/purchase/updatetransactionstatus', {
+                        order_id: options.order_id,
+                        payment_id: response.razorpay_payment_id
+                    }, { headers: { "Authorization": token } })
+
+                    alert('you are a Premimum user now.');
+                }
+            };
+
+            const rzpl = new Razorpay(options);
+            rzpl.open();
+            rzpl.on('payment.failed', function (response) {
+                console.log(response);
+                axios.post('http://localhost:3000/purchase/updatefailedtransactionstatus', {
+                    order_id: options.order_id,
+                    //payment_id: response.razorpay_payment_id,
+                }, { headers: { "Authorization": token } })
+                alert('Something went wrong');
+            })
+        }
     </script>
 
 </body>
 
-</html>   
+</html>

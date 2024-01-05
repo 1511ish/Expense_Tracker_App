@@ -2,24 +2,29 @@ const Sequelize = require('sequelize');
 
 const sequelize = require('../util/database');
 
-module.exports = sequelize.define('user',{
-    id:{
+module.exports = sequelize.define('user', {
+    id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
     },
-    name:{
+    name: {
         type: Sequelize.STRING,
         allowNull: false
     },
-    email_Id:{
+    email_Id: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
     },
-    password:{
+    password: {
         type: Sequelize.STRING,
         allowNull: false
+    },
+
+    ispremiumuser: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: false,
     }
 })
