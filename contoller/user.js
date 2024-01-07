@@ -33,8 +33,8 @@ exports.signUp = async (req, res) => {
 }
 
 
-function generateAccessToken(id) {
-    return jwt.sign({ userId: id }, 'secretkey');
+function generateAccessToken(id, ispremiumuser) {
+    return jwt.sign({ userId: id, isPremium: ispremiumuser}, 'secretkey');
 }
 
 exports.login = async (req, res) => {
@@ -50,7 +50,8 @@ exports.login = async (req, res) => {
                     throw new Error('Something went wrong');
                 }
                 if (result === true) {
-                    res.status(200).json({ success: true, message: "User logged in successfully", token: generateAccessToken(user[0].dataValues.id) });
+                    res.status(200).json({ success: true, message: "User logged in successfully", token: generateAccessToken(user[0].dataValues.id, user[0].dataValues.ispremiumuser), isPrimium: user[0].dataValues.ispremiumuser });
+                    //jo uper line mein last wala argument pass krahu y strategy mein use krra tha and its very useful.. ab iska koi use nahi hai.
                 } else {
                     return res.status(400).json({ success: false, message: 'Password is incorrect' });
                 }

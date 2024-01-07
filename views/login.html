@@ -73,7 +73,6 @@
 
         const login_btn = document.getElementById('login_btn');
         login_btn.addEventListener('click', login);
-
         async function login(e) {
             e.preventDefault();
             console.log("clicked");
@@ -86,12 +85,14 @@
                     password: password.value
                 }
                 response = await axios.post('http://localhost:3000/user/login', loginDetails);
+                
                 window.alert(response.data.message);
                 localStorage.setItem('token', response.data.token);
-                window.location.href =  "./addExpense.html";
+                localStorage.setItem('isPremium', response.data.isPrimium);
+                window.location.href = './index.html';
             } catch (err) {
                 const form = document.getElementById('form');
-                    form.innerHTML += `<div style="color:red">${err.response.data.message}</div>`
+                form.innerHTML += `<div style="color:red">${err.response.data.message}</div>`
                 console.log(err);
             }
             email.value = '';
