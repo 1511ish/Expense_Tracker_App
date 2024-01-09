@@ -6,6 +6,7 @@ let expence_amount = document.getElementById('amount');
 let description = document.getElementById('description');
 const buyPremium_btn = document.getElementById('rzp-button1');
 const show_leaderboard_btn = document.getElementById('show_leaderboard');
+const token = localStorage.getItem('token');
 
 addExpense_btn.addEventListener('click', addExpense);
 buyPremium_btn.addEventListener('click', buyPremium);
@@ -21,9 +22,9 @@ function addExpense() {
         category: category.value,
     }
 
-    axios.post('http://localhost:3000/expense/add-expense', newExpense)
+    axios.post('http://localhost:3000/expense/add-expense', newExpense,{ headers: { 'Authorization': token } })
         .then(response => {
-            showDataOnScreen(response.data.newExpenseDetail)
+            showDataOnScreen(response.data.newExpenseDetail);
             expence_amount.value = '';
             description.value = '';
         })
@@ -74,7 +75,7 @@ function showDataOnScreen(expense) {
 
 
 function deleteExpense(expenseId) {
-    axios.delete(`http://localhost:3000/expense/delete-expense/${expenseId}`)
+    axios.delete(`http://localhost:3000/expense/delete-expense/${expenseId}`,{ headers: { 'Authorization': token }})
         .then((response) => {
             removeExpensefromScreen(expenseId);
         })
@@ -102,7 +103,6 @@ function removeExpensefromScreen(expenseId) {
 
 async function buyPremium(e) {
     e.preventDefault();
-    const token = localStorage.getItem('token');
     const response = await axios.get('http://localhost:3000/purchase/premiummembership', { headers: { "Authorization": token } })
     var options = {
         "key": response.data.key_id,
@@ -139,7 +139,7 @@ async function showLeaderBoard(e) {
     const arr = response.data;
     arr.forEach(element => {
         const li = document.createElement('li');
-        li.innerHTML = `${element.name} - ${element.total_cost}`;
+        li.innerHTML = `Name- ${element.name} - Totalexpense - ${element.totalExpense}`;
         premiumContainer.appendChild(li);
         console.log(element)
     });

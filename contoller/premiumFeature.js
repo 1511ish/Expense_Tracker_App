@@ -6,15 +6,18 @@ const sequelize = require('../util/database');
 exports.getLeaderBoard = async (req, res, next) => {
     try {
         const leaderBoardUsers = await User.findAll({
-            attributes: ['id', 'name', [sequelize.fn('sum', sequelize.col('expenses.expense_amount')), 'total_cost']],
-            include: [
-                {
-                    model: Expense,
-                    attributes: []
-                }
-            ],
-            group: ['user.id'],
-            order: [['total_cost','DESC']]
+            //attributes: ['id', 'name', [sequelize.fn('sum', sequelize.col('expenses.expense_amount')), 'total_cost']],
+            // include: [
+            //     {
+            //         model: Expense,
+            //         attributes: []
+            //     }
+            // ],
+            // group: ['user.id'],
+
+            //it is a optimise way..
+            attributes: ['id', 'name','totalExpense'],
+            order: [['totalExpense','DESC']]
 
         })
         res.status(200).json(leaderBoardUsers);
