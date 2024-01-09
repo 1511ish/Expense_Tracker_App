@@ -1,4 +1,6 @@
 const Expense = require('../models/Expense');
+const sequelize = require('../util/database');
+
 let userId;
 exports.addExpense = async (req, res, next) => {
     try {
@@ -6,24 +8,25 @@ exports.addExpense = async (req, res, next) => {
         const amount = req.body.amount;
         const description = req.body.description;
         const category = req.body.category;
+        const t = await sequelize.transaction();
 
-        const promise1 = user.createExpense({ expense_amount: amount, description: description, category: category, userId: userId });
-        const promise2 = user.update({ totalExpense: parseInt(user.totalExpense) + parseInt(amount) });
+        const promise1 = user.createExpense({ expense_amount: amount, description: description, category: category, userId: userId }, { transaction: t });
+        const promise2 = user.update({ totalExpense: parseInt(user.totalExpense) + parseInt(amount) }, { transaction: t })
 
         Promise.all([promise1, promise2])
-            .then(([res1, res2]) => {
+            .then(async ([res1, res2]) => {
+                await t.commit();
                 res.status(201).json({ newExpenseDetail: res1 });
                 console.log('SUCCESSFULLY ADDED');
             })
-            .catch((err) => {
+            .catch(async (err) => {
+                await t.rollback();
                 console.log(err);
                 throw new Error(err);
             })
     } catch (err) {
         console.log(err);
-        res.status(500).json({
-            error: err
-        })
+        res.status(500).json({ success: false, error: err })
     }
 }
 
@@ -32,8 +35,6 @@ exports.getExpenses = async (req, res, next) => {
     try {
         userId = req.userId;
         const allexpenses = await Expense.findAll({ where: { userId: userId } });
-        //console.log(allexpenses);
-        //console.log(allexpenses[0].id);
         res.status(200).json({ allExpense: allexpenses });
     } catch (err) {
         console.log(err);
@@ -48,15 +49,18 @@ exports.deleteExpense = async (req, res, next) => {
         const expenseId = req.params.id;
         const expense = await Expense.findByPk(expenseId);
         const amount = expense.expense_amount;
+        const t = await sequelize.transaction();
 
-        const promise1 = user.update({ totalExpense: parseInt(user.totalExpense) - parseInt(amount) });
-        const promise2 = Expense.destroy({ where: { id: expenseId } });
+        const promise1 = user.update({ totalExpense: parseInt(user.totalExpense) - parseInt(amount) }, { transaction: t });
+        const promise2 = Expense.destroy({ where: { id: expenseId } }, { transaction: t });
         Promise.all([promise1, promise2])
-            .then(([res1, res2]) => {
+            .then(async ([res1, res2]) => {
                 // res.status(201).json({ newExpenseDetail: res1 });
+                await t.commit();
                 console.log('SUCCESSFULLY DELETED');
             })
-            .catch((err) => {
+            .catch(async (err) => {
+                await t.rollback();
                 console.log(err);
                 throw new Error(err);
             })

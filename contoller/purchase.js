@@ -36,14 +36,14 @@ function generateAccessToken(id, ispremiumuser) {
 exports.updateTransactionStatus = async (req, res, next) => {
     try {
         const { payment_id, order_id } = req.body;
-        console.log(payment_id);
+        
         const order = await Order.findOne({ where: { orderId: order_id } })
         const promise1 = order.update({ paymentid: payment_id, status: 'COMPLETED' })
         const promise2 = req.user.update({ ispremiumuser: true })
 
         Promise.all([promise1, promise2])
             .then(() => {
-                console.log("it is working fine");
+               
                 return res.status(202).json({ success: true, message: 'Payment successful!', token: generateAccessToken(req.user.id, req.user.ispremiumuser) })
             })
             .catch((err) => {

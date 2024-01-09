@@ -32,7 +32,7 @@ Expense.belongsTo(User);
 User.hasMany(Order,{onDelete: 'CASCADE'});
 Order.belongsTo(User);
 
-sequelize.sync({force:true})
+sequelize.sync()
     .then(result => {
         app.listen(3000);
     })
