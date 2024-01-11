@@ -7,6 +7,7 @@ var cors = require('cors');
 const User = require('./models/User');
 const Expense = require('./models/Expense');
 const Order = require('./models/Order')
+const ForgetPasswordRequest = require('./models/ForgotPasswordRequests');
 
 const app = express();
 
@@ -14,7 +15,7 @@ const expenseRoutes = require('./routes/expense');
 const userRoutes = require('./routes/user');
 const purchaseRoutes = require('./routes/purchase');
 const premiumFeatureRoutes = require('./routes/premiumFeature');
-const passwordRoutes = require('./routes/forgotpassword');
+const passwordRoutes = require('./routes/password');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -33,6 +34,9 @@ Expense.belongsTo(User);
 
 User.hasMany(Order,{onDelete: 'CASCADE'});
 Order.belongsTo(User);
+
+User.hasMany(ForgetPasswordRequest,{onDelete: 'CASCADE'});
+ForgetPasswordRequest.belongsTo(User);
 
 sequelize.sync()
     .then(result => {
