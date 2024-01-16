@@ -8,6 +8,7 @@ const User = require('./models/User');
 const Expense = require('./models/Expense');
 const Order = require('./models/Order')
 const ForgetPasswordRequest = require('./models/ForgotPasswordRequests');
+const DownloadedFile = require('./models/DownloadedUrl');
 
 const app = express();
 
@@ -16,10 +17,12 @@ const userRoutes = require('./routes/user');
 const purchaseRoutes = require('./routes/purchase');
 const premiumFeatureRoutes = require('./routes/premiumFeature');
 const passwordRoutes = require('./routes/password');
+const { TrustedAdvisor } = require('aws-sdk');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+app.use(express.static('public'));
 
 app.use('/user', userRoutes);
 app.use('/expense', expenseRoutes);
@@ -29,14 +32,17 @@ app.use('/password', passwordRoutes);
 // app.use('/', (req, res) => {
 //     res.sendFile(path.join(__dirname, '/views/signup.html'));
 // });
-User.hasMany(Expense,{onDelete: 'CASCADE'});
+User.hasMany(Expense, { onDelete: 'CASCADE' });
 Expense.belongsTo(User);
 
-User.hasMany(Order,{onDelete: 'CASCADE'});
+User.hasMany(Order, { onDelete: 'CASCADE' });
 Order.belongsTo(User);
 
-User.hasMany(ForgetPasswordRequest,{onDelete: 'CASCADE'});
+User.hasMany(ForgetPasswordRequest, { onDelete: 'CASCADE' });
 ForgetPasswordRequest.belongsTo(User);
+
+User.hasMany(DownloadedFile, { onDelete: 'CASCADE', hooks: true })
+DownloadedFile.belongsTo(User)
 
 sequelize.sync()
     .then(result => {

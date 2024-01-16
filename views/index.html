@@ -25,7 +25,8 @@
             flex-direction: column;
         }
 
-        input {
+        input,
+        button {
             padding: 5px;
         }
 
@@ -71,6 +72,7 @@
             </select>
             <input type="button" value="Add Expense" id="add">
             <input type="button" value="Buy Premium" id="rzp-button1">
+            <input type="button" value="Download File" id="downloadexpense">
             <input type="button" value="Show Leaderboard" id="show_leaderboard" style="visibility:hidden;">
             <div id="message"></div>
             <!-- <button id="rzp-button1">Buy Premium</button> -->
@@ -79,6 +81,11 @@
         <div>
             <h2>Expense List</h2>
             <ul id="expense_list">
+            </ul>
+        </div>
+        <div>
+            <h2>Recently Downloded Expense File List</h2>
+            <ul id="expensefile_list">
             </ul>
         </div>
         <div id="leaderboard" style="visibility: hidden;">

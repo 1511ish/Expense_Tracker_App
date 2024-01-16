@@ -1,4 +1,5 @@
 const Sib = require('sib-api-v3-sdk')
+require('dotenv').config();
 const uuid = require('uuid')
 const bcrypt = require('bcrypt')
 require('dotenv').config();
@@ -9,17 +10,30 @@ const ForgotPasswordRequest = require('../models/ForgotPasswordRequests');
 
 const client = Sib.ApiClient.instance
 const apiKey = client.authentications['api-key']
-apiKey.apiKey = process.env.API_KEY;
+// apiKey.apiKey = process.env.API_KEY;
+console.log(process.env)
+// apiKey.apiKey = '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';
 
-const tranEmailApi = new Sib.TransactionalEmailsApi();
+// const tranEmailApi = new Sib.TransactionalEmailsApi();
 
-const sender = {
-    email: 'mrishantsre1511ish@gmail.com'
-}
+// const sender = {
+//     email: 'mrishantsre1511ish@gmail.com'
+// }
+// const receiver = [{
+//     email: 'aakashsre6398@gmail.com'
+// }]
 
 
 
-
+// tranEmailApi.sendTransacEmail({
+//     sender,
+//     to: receiver,
+//     subject: 'Password reset',
+//     htmlContent: `<p>Hello Coder<br>
+//                 You are receiving this mail as per your request to change your password for your expense tracker pro account.
+//                 You can change your password from here:<br>
+//                 <a href='http://localhost:3000/password/resetPassword/'>reset pasword</a></p>`
+// })
 exports.postResetPassword = async (req, res, next) => {
     try {
         const email = req.body.email
