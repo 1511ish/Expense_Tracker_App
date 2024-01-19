@@ -17,13 +17,6 @@ buyPremium_btn.addEventListener('click', buyPremium);
 show_leaderboard_btn.addEventListener('click', showLeaderBoard)
 download_btn.addEventListener('click', download);
 
-const currentPage = 1;
-let itemsPerPage = 1;
-if(localStorage.getItem('rowPerPage')){
-    itemsPerPage = localStorage.getItem('rowPerPage');
-    // console.log(typeof(itemsPerPage));
-}
-
 
 function showPremiumUserMessage() {
     document.getElementById('rzp-button1').style.visibility = "hidden";
@@ -91,7 +84,6 @@ function showPagination({ currentPage, hasNextPage, nextPage, hasPreviousPage, p
 function listExpenses(allExpense) {
     for (var i = 0; i < allExpense.length; i++) {
         showDataOnScreen(allExpense[i])
-        // console.log(allExpense);
     }
 }
 
@@ -131,6 +123,10 @@ function addExpense() {
 
 
 function getExpenses(page) {
+    let itemsPerPage = 1;
+    if (localStorage.getItem('rowPerPage')) {
+        itemsPerPage = localStorage.getItem('rowPerPage');
+    }
     ul.innerHTML = '';
     axios.get(`http://localhost:3000/expense/get-expenses?page=${page}&pageSize=${itemsPerPage}`, { headers: { 'Authorization': token } })
         .then(({ data: { allExpenses, ...pageData } }) => {
@@ -202,14 +198,14 @@ async function showLeaderBoard(e) {
     e.preventDefault();
     premiumContainer.innerHTML = '';
     const token = localStorage.getItem('token');
-    const response = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: { "Authorization": token } })
-    const arr = response.data;
-    arr.forEach(element => {
-        const li = document.createElement('li');
-        li.innerHTML = `Name- ${element.name} - Totalexpense - ${element.totalExpense}`;
-        premiumContainer.appendChild(li);
-        console.log(element)
-    });
+    // const response = await axios.get('http://localhost:3000/premium/showLeaderBoard', { headers: { "Authorization": token } })
+    // const arr = response.data;
+    // arr.forEach(element => {
+    //     const li = document.createElement('li');
+    //     li.innerHTML = `Name- ${element.name} - Totalexpense - ${element.totalExpense}`;
+    //     premiumContainer.appendChild(li);
+    //     console.log(element)
+    // });
 }
 
 
@@ -234,10 +230,9 @@ function download(e) {
 }
 
 function updateRowsPerPage() {
-    // e.preventDefault();
     console.log("running");
     const index = document.getElementById('rowsPerPage').selectedIndex;
     const rowsPerPage = document.getElementsByClassName('rows')[index].value;
     localStorage.setItem('rowPerPage', rowsPerPage);
-    location.reload();
+    getExpenses(1);
 }
